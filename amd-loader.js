@@ -164,7 +164,7 @@
                 return modules[deps].exports;
             }
             else {
-                throw new Error("require() failed to find module '" + deps + "'.");
+                throw new Error("require() failed to find module '" + deps + "' (referenced from module '" + id + "').");
             }
         }
         else if (!Array.isArray(deps)) {

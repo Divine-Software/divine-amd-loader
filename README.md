@@ -10,6 +10,7 @@ scripts at runtime; instead, all modules must be available up front.
     * Using the `define('id', function(require, exports, module) {...})` syntax.
     * Named modules can be placed in HTML files or external scripts and any
       number of modules can be in the same file.
+    * Named module IDs must be absolute.
 * Unnamed modules
     * Using the `define([deps], function factory(deps) {...})` syntax.
     * Using the `define(id, function(require, exports, module) {...})` syntax.
