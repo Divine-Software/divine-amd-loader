@@ -196,6 +196,6 @@
     define.amd      = { bestest: { debug: false } };
     exports.define  = define;
     exports.require = function require(deps, resolve, reject) {
-        return requireHelper(deps, resolve, reject, "", { require: define.require });
+        return requireHelper(deps, resolve, reject, "", { require: exports.require });
     };
 }));
