@@ -33,7 +33,7 @@
 
         module = module.replace(/\.[^.]*$/, "");
 
-        if (define.amd.bestest.debug) {
+        if (define.amd.divine.debug) {
             console.debug("Module name '" + module + "' calculated from base '" + base + "', script '" + script + "'.");
         }
 
@@ -64,7 +64,7 @@
 
         var module = baseParts.join("/");
 
-        if (define.amd.bestest.debug) {
+        if (define.amd.divine.debug) {
             console.debug("Resolved module '" + path + "' relative base '" + base + "' to '" + module + "'.");
         }
 
@@ -107,12 +107,12 @@
 
         if (!id) {
             id = "<anonymous-" + ++unnamed + ">";
-            if (define.amd.bestest.debug) {
+            if (define.amd.divine.debug) {
                 console.warn(new Error("Defining unnamed module '" + id + "'."));
             }
         }
         else {
-            if (define.amd.bestest.debug) {
+            if (define.amd.divine.debug) {
                 console.debug("Defining module '" + id + "'.");
             }
         }
@@ -145,7 +145,7 @@
                     module.exports.__proto__ = exports;
                     module.exports = exports;
 
-                    if (define.amd.bestest.debug) {
+                    if (define.amd.divine.debug) {
                         console.warn("Module '" + id + "' did not use the 'exports' dependency, which is required for full circular dependency support.");
                     }
                 }
@@ -193,7 +193,7 @@
         }
     }
 
-    define.amd      = { bestest: { debug: false } };
+    define.amd      = { divine: { debug: false } };
     exports.define  = define;
     exports.require = function require(deps, resolve, reject) {
         return requireHelper(deps, resolve, reject, "", { require: exports.require });

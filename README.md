@@ -1,4 +1,4 @@
-# The Bestest AMD JavaScript Module Loader
+# The Divine AMD JavaScript Module Loader
 
 This is a small, fully static AMD module loader. It does not dynamically load
 scripts at runtime; instead, all modules must be available up front.
@@ -25,7 +25,7 @@ scripts at runtime; instead, all modules must be available up front.
 * For all dependencies, relative module paths are supported.
 * When defining modules, if the factory is not a function, the module will be
   value of that argument itself, so bundling non-JavaScript code works as well.
-* The property `define.amd.bestest.debug` may be set to `true` to enable
+* The property `define.amd.divine.debug` may be set to `true` to enable
   debug/diagnostics logging.
 
 ## Use Cases
@@ -39,7 +39,7 @@ scripts at runtime; instead, all modules must be available up front.
 
 ## The MIT License
 
-Copyright 2017 Martin Blom.
+Copyright 2017 Martin Blom. A Divine Software™ production.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

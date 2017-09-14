@@ -1,5 +1,5 @@
 {
-  "name": "@bestest/amd-loader",
+  "name": "@divine/amd-loader",
   "version": "1.0.0",
   "description": "A no-magic, no-nonsense, static and synchronous AMD loader",
   "main": "amd-loader.js",
