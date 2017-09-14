@@ -77,9 +77,9 @@
         if (arguments.length === 1) {
             id      = moduleName();
             deps    = ["require", "exports", "module"];
-            factory = arguments[0]
+            factory = arguments[0];
         }
-        else if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function") {
+        else if (arguments.length === 2 && typeof arguments[0] === "string") {
             id      = arguments[0];
             deps    = ["require", "exports", "module"];
             factory = arguments[1]
