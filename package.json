@@ -1,0 +1,12 @@
+{
+  "name": "@bestest/amd-loader",
+  "version": "1.0.0",
+  "description": "A no-magic, no-nonsense, static and synchronous AMD loader",
+  "main": "amd-loader.js",
+  "author": "Martin Blom <martin@blom.org>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^4.6.1",
+    "uglify-js": "^3.1.0"
+  }
+}

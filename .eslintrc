@@ -1,0 +1,12 @@
+{
+    "extends": "eslint:recommended",
+    "rules": {
+        "indent": ["error", 4],
+        "no-console": "warn",
+    },
+    "env": {
+        "amd": true,
+        "browser": true,
+        "node": true
+    }
+}
