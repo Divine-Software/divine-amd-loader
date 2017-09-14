@@ -117,6 +117,11 @@
             }
         }
 
+        if (modules[id]) {
+            console.error(new Error("Module '" + id + "' already defined."));
+            return;
+        }
+
         var module = modules[id] = { module: { id: id }, exports: {} };
 
         if (typeof factory !== 'function') {
