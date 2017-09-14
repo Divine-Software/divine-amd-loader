@@ -1,2 +1,4 @@
 /node_modules
 /amd-loader.min.js
+.*~
+*~
