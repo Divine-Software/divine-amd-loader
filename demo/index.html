@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>The Divine AMD JavaScript Module Loader</title>
+        <script src='../amd-loader.js'></script>
+        <script>
+            var console = {};
+
+            console.log = console.debug = console.info = console.warn = console.error = function(msg) {
+                document.getElementById('output').innerHTML += new Date().toISOString() + ': '
+                + String(msg).replace('&', '&amp;').replace('<', '&lt;') + '\n';
+            };
+
+            define.amd.divine.debug = true;
+            </script>
+    </head>
+    <body>
+        <pre id='output'></pre>
+
+        <script>
+            console.log("Start");
+
+            define(function(require, exports, module) {
+                console.log('Inside unnamed CommonJS');
+            });
+
+            define(['require', 'exports', 'module', 'path/to/cjs2'], function(require, exports, module, cjs2) {
+                console.log('Inside unnamed AMD; imported cjs2: ' + cjs2.name);
+            });
+
+            define('path/to/cjs2', function(require, exports, module) {
+                console.log('Inside named CommonJS');
+                exports.name = 'CJS2';
+            });
+
+            define('path/to/amd2', ['exports', 'require'], function(exports, require) {
+                var cjs2 = require('./cjs2');
+                console.log('Inside named AMD; imported cjs2: ' + cjs2.name);
+                exports.name = 'AMD2';
+            });
+        </script>
+
+        <script src='external-unnamed.js'></script>
+        <script src='external-named.js'></script>
+
+        <script>
+            define.amd.divine.onReady(function() {
+                console.log("All modules ready to use!");
+            });
+        </script>
+    </body>
+</html>
