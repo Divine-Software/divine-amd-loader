@@ -1,16 +1,18 @@
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
+    if (typeof define === "function" && define.amd) {
         define(['exports'], factory);
     }
-    else if (typeof module === 'object' && module.exports) {
+    else if (typeof module === "object" && module.exports) {
         factory(module.exports);
     }
     else {
         factory(root);
     }
 }(this, function (exports) {
-    var modules = {};
-    var unnamed = 0;
+    var entries        = {};
+    var initQueue      = [];
+    var onReadyQueue   = [];
+    var unnamedCounter = 0;
 
     function moduleName() {
         var base   = typeof document !== "undefined" && document.location      && document.location.href;
@@ -65,10 +67,25 @@
         var module = baseParts.join("/");
 
         if (define.amd.divine.debug) {
-            console.debug("Resolved module '" + path + "' relative base '" + base + "' to '" + module + "'.");
+            console.debug("Module name '" + module + "' calculated from base '" + base + "', path '" + path + "'.");
         }
 
         return module;
+    }
+
+    function invoke(async, fn) {
+        if (!async) {
+            fn();
+        }
+        else if (typeof Promise === "function") {
+            new Promise(function(resolve) { resolve(); }).then(fn);
+        }
+        else if (typeof setImmediate === "function") {
+            setImmediate(fn);
+        }
+        else {
+            setTimeout(fn, 0);
+        }
     }
 
     function define() {
@@ -106,9 +123,10 @@
         }
 
         if (!id) {
-            id = "<anonymous-" + ++unnamed + ">";
+            id = "[anonymous-" + ++unnamedCounter + "]";
+
             if (define.amd.divine.debug) {
-                console.warn(new Error("Defining unnamed module '" + id + "'."));
+                console.warn("Defining unnamed module '" + id + "'.");
             }
         }
         else {
@@ -117,51 +135,111 @@
             }
         }
 
-        if (modules[id]) {
+        deps = deps.map(function(dep) {
+            return absolutePath(id, dep.toString());
+        });
+
+        if (entries[id]) {
             console.error(new Error("Module '" + id + "' already defined."));
             return;
         }
 
-        var module = modules[id] = { module: { id: id }, exports: {} };
+        var entry = entries[id] = {
+            module:       { id: id, exports: undefined },
+            factory:      factory,
+            dependencies: deps
+        };
 
-        if (typeof factory !== 'function') {
-            module.exports = factory;
+        if (typeof factory !== "function") {
+            entry.module.exports = factory;
         }
         else {
+            initQueue.push(entry);
+
+            if (initQueue.length === 1) {
+                invoke(true, initModules);
+            }
+        }
+    }
+
+    function initModules() {
+        // Initialize all modules
+        for (var entry = initQueue.shift(); entry; entry = initQueue.shift()) {
+            initModule(entry.module.id);
+        }
+
+        // Invoke registered onReady callbacks when all pending modules have been initialized
+        for (var callback = onReadyQueue.shift(); callback; callback = onReadyQueue.shift()) {
+            try { callback() } catch (ex) { console.error(ex) }
+        }
+    }
+
+    function initModule(id) {
+        var entry = entries[id];
+
+        if (entry && typeof entry.module.exports === "undefined") {
+            // Mark as initialized/initializing
+            entry.module.exports = {};
+
+            // Make sure dependencies are initialized first
+            entry.dependencies.forEach(initModule);
+
             var builtins = {
                 require: function require(deps, resolve, reject) {
-                    return requireHelper(deps, resolve, reject, id, builtins);
+                    return requireHelper(deps, resolve, reject, entry.module.id, true, builtins);
                 },
-                exports: module.exports,
-                module: module.module
+                exports: entry.module.exports,
+                module: entry.module
             };
 
-            builtins.require(deps, function() {
-                var exports = factory.apply(null, arguments);
+            // Resolve dependencies and initialize module
+            requireHelper(entry.dependencies, function() {
+                if (define.amd.divine.debug) {
+                    console.debug("Initializing module '" + id + "'.");
+                }
+
+                var exports = entry.factory.apply(null, arguments);
 
                 if (exports) {
                     // Keep references to circular dependencies at least somewhat valid by pointing
                     // the prototype chain of the original empty exports to the new object.
-                    module.exports.__proto__ = exports;
-                    module.exports = exports;
+                    entry.module.exports.__proto__ = exports;
+                    entry.module.exports = exports;
 
                     if (define.amd.divine.debug) {
                         console.warn("Module '" + id + "' did not use the 'exports' dependency, which is required for full circular dependency support.");
                     }
                 }
-            });
+
+                // Drop references no longer required
+                entry.factory      = null;
+                entry.dependencies = null;
+            }, undefined, entry.module.id, false, builtins);
         }
     }
 
-    function requireHelper(deps, resolve, reject, id, builtins) {
+    function onReady(callback) {
+        if (typeof callback !== "function") {
+            throw new TypeError("onReady() argument must be a function");
+        }
+
+        if (initQueue.length == 0) {
+            invoke(true, callback);
+        }
+        else {
+            onReadyQueue.push(callback);
+        }
+    }
+
+    function requireHelper(deps, resolve, reject, id, async, builtins) {
         if (typeof deps === "string" && !resolve && !reject) {
             deps = absolutePath(id, deps);
 
             if (builtins[deps]) {
                 return builtins[deps];
             }
-            else if (modules[deps]) {
-                return modules[deps].exports;
+            else if (entries[deps]) {
+                return entries[deps].module.exports;
             }
             else {
                 throw new Error("require() failed to find module '" + deps + "' (referenced from module '" + id + "').");
@@ -177,9 +255,9 @@
             throw new TypeError("Third require() argument should be a function, if specified.");
         }
         else {
-            setTimeout(function() {
+            invoke(async, function() {
                 try {
-                    resolve.apply(null, (deps.map(function(dep) { return requireHelper(dep.toString(), null, null, id, builtins); })));
+                    resolve.apply(null, (deps.map(function(dep) { return requireHelper(dep.toString(), null, null, id, false, builtins); })));
                 }
                 catch (ex) {
                     if (typeof reject === "function") {
@@ -193,9 +271,15 @@
         }
     }
 
-    define.amd      = { divine: { debug: false } };
+    define.amd = {
+        divine: {
+            debug:   false,
+            onReady: onReady,
+        }
+    };
+
     exports.define  = define;
     exports.require = function require(deps, resolve, reject) {
-        return requireHelper(deps, resolve, reject, "", { require: exports.require });
+        return requireHelper(deps, resolve, reject, "", true, { require: exports.require });
     };
 }));

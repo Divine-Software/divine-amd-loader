@@ -12,8 +12,8 @@ scripts at runtime; instead, all modules must be available up front.
       number of modules can be in the same file.
     * Named module IDs must be absolute.
 * Unnamed modules
-    * Using the `define([deps], function factory(deps) {...})` syntax.
-    * Using the `define(id, function(require, exports, module) {...})` syntax.
+    * Using the `define(['dep1', ...], function factory(dep1, ...) {...})` syntax.
+    * Using the `define(function(require, exports, module) {...})` syntax.
     * Unnamed modules should be in their own script file and referenced by a
       `<script>` tag. The name of the module will be automatically calculated
       based on the path.
@@ -27,12 +27,15 @@ scripts at runtime; instead, all modules must be available up front.
   value of that argument itself, so bundling non-JavaScript code works as well.
 * The property `define.amd.divine.debug` may be set to `true` to enable
   debug/diagnostics logging.
+* A callback may be registered using `define.amd.divine.onReady(fn)`, which will
+  be invoked as soon as all defined modules have been initialized.
+* Supports all modern browsers, and MSIE 9+.
 
 ## Use Cases
 
 * Rapid rebuilds: Pack your favorite frameworks with `webpack` as AMD once—a
   rather slow operation—and then simply concatenate or load them directly via
-  `<scropt>` tags.
+  `<script>` tags.
 * Use the *TypeScript* compiler's `"outFile": "app.js"` and `"module": "amd"`
   options to compile to something deployable directly, without any other build
   steps. Perfect for development and viable even for production.
