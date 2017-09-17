@@ -26,7 +26,7 @@
         var baseDir = base.replace(/[^/]+$/, "");
         var module;
 
-        if (script.startsWith(baseDir)) {
+        if (script.indexOf(baseDir) === 0) {
             module = script.substr(baseDir.length);
         }
         else {
@@ -43,7 +43,7 @@
     }
 
     function absolutePath(base, path) {
-        if (path[0] !== ".") {
+        if (path.charAt(0) !== ".") {
             return path;
         }
 
@@ -274,7 +274,7 @@
     define.amd = {
         divine: {
             debug:   false,
-            onReady: onReady,
+            onReady: onReady
         }
     };
 

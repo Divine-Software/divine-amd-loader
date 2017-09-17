@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <html>
     <head>
         <title>The Divine AMD JavaScript Module Loader</title>
@@ -7,7 +9,7 @@
 
             console.log = console.debug = console.info = console.warn = console.error = function(msg) {
                 document.getElementById('output').innerHTML += new Date().toISOString() + ': '
-                + String(msg).replace('&', '&amp;').replace('<', '&lt;') + '\n';
+                + String(msg).replace('&', '&amp;').replace('<', '&lt;') + '<br />';
             };
 
             define.amd.divine.debug = true;
