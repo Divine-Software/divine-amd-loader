@@ -273,9 +273,10 @@
 
     define.amd = {
         divine: {
-            debug:   false,
-            onReady: onReady
-        }
+            debug: false
+        },
+
+        onReady: onReady
     };
 
     exports.define  = define;

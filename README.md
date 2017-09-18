@@ -27,8 +27,8 @@ scripts at runtime; instead, all modules must be available up front.
   value of that argument itself, so bundling non-JavaScript code works as well.
 * The property `define.amd.divine.debug` may be set to `true` to enable
   debug/diagnostics logging.
-* A callback may be registered using `define.amd.divine.onReady(fn)`, which will
-  be invoked as soon as all defined modules have been initialized.
+* A callback may be registered using `define.amd.onReady(fn)`, which will be
+  invoked as soon as all defined modules have been initialized.
 * Supports all modern browsers, and MSIE 9+.
 
 ## Use Cases
